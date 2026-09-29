@@ -19,9 +19,12 @@ import {
   ShieldAlert,
   GitBranch,
   Copy,
-  Check
+  Check,
+  HelpCircle,
+  ShieldX,
+  FileSearch
 } from 'lucide-react';
-import { CryptographicEvidence, EmailSession, ProtocolType, SeverityLevel } from '../../types/security';
+import { CryptographicEvidence, DemoScenario, EmailSession, ProtocolType, SeverityLevel } from '../../types/security';
 import { SeverityBadge } from '../common/SeverityBadge';
 import { ConfidenceBadge } from '../common/ConfidenceBadge';
 import { SessionDetailModal } from './SessionDetailModal';
@@ -29,6 +32,7 @@ import { NavigationTab } from '../layout/Sidebar';
 
 interface Props {
   sessions: EmailSession[];
+  scenario?: DemoScenario;
   evidenceList?: CryptographicEvidence[];
   selectedSessionId: string | null;
   onSelectSession: (id: string | null) => void;
@@ -40,6 +44,7 @@ type InspectorTab = 'handshake' | 'certificate' | 'events' | 'evidence' | 'overv
 
 export const SessionsView: React.FC<Props> = ({
   sessions,
+  scenario,
   evidenceList = [],
   selectedSessionId,
   onSelectSession,
@@ -84,6 +89,89 @@ export const SessionsView: React.FC<Props> = ({
 
   const tls = activeSession?.tlsHandshake;
   const cert = tls?.certificate;
+
+  // OUT OF SCOPE / Zero Reconstructed Email Sessions Guard
+  if (sessions.length === 0) {
+    const classification = scenario?.pcapMetadata?.protocolClassification;
+    const protocols = classification?.detectedProtocols || [];
+    return (
+      <div className="p-4 sm:p-6 space-y-5 max-w-7xl mx-auto">
+        <div className="bg-gradient-to-r from-amber-950/40 via-[#0F1623] to-[#0A0E17] border border-amber-600/50 rounded-xl p-6 space-y-4 shadow-lg">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-amber-950/80 border border-amber-600/70 rounded-xl text-amber-400 shrink-0">
+              <ShieldX className="w-8 h-8" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
+                  Forensic Scope Validation Layer
+                </span>
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-700">
+                  ASSESSMENT STATUS: OUT OF SCOPE
+                </span>
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                  POSTURE: NOT ASSESSABLE
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                No Email Communication Streams Reconstructed
+              </h2>
+              <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
+                {scenario?.scopeValidation?.scopeReason || 'No SMTP, IMAP, POP3, SMTPS, IMAPS, or POP3S traffic was identified in this packet capture.'}
+                {' '}Session reconstruction and cryptographic state machine reassembly are strictly executed only when email traffic is present.
+              </p>
+            </div>
+          </div>
+
+          {/* Golden Forensic Rule Callout */}
+          <div className="p-3.5 bg-[#080C14] border border-amber-800/40 rounded-lg text-xs flex items-start gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-slate-300 leading-relaxed">
+              <strong className="text-amber-300 font-mono">GOLDEN FORENSIC RULE ENFORCED:</strong>{' '}
+              Absence of Evidence ≠ Secure. Absence of Evidence = NOT ASSESSABLE.
+              Because 0 email streams were detected, SecureMailScope refuses to issue false security certifications or fabricate mock email sessions.
+            </div>
+          </div>
+
+          {/* Protocol Classification Table */}
+          {protocols.length > 0 && (
+            <div className="space-y-2 pt-2">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-300 block">
+                Observed Protocol Classification (All Layers Dissected):
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {protocols.map((p, idx) => (
+                  <div key={idx} className="bg-[#0A0E17] border border-slate-800 rounded-lg p-3">
+                    <span className="text-slate-400 text-[10px] uppercase font-mono block">{p.protocol}</span>
+                    <span className="text-white font-mono font-bold text-base tabular-nums">{p.packetCount.toLocaleString()}</span>
+                    <span className="text-[10px] text-slate-500 block">packets ({classification?.confidence || 'HIGH'} confidence)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Action */}
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => onNavigateTab('dashboard')}
+              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Return to Assessment Dashboard</span>
+            </button>
+            <button
+              onClick={() => onNavigateTab('pcap_analysis')}
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+            >
+              <FileSearch className="w-4 h-4 text-cyan-400" />
+              <span>Inspect Raw Ingestion Pipeline</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto">

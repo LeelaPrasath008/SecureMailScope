@@ -52,8 +52,15 @@ export const ReportsView: React.FC<Props> = ({ scenario, posture }) => {
           interface: meta.capturedInterface,
           evidence_confidence: meta.confidence
         },
+        protocol_classification: scenario.pcapMetadata.protocolClassification || null,
+        scope_validation: scenario.scopeValidation || posture.scopeValidation || null,
+        analyst_transparency: scenario.analystTransparency || posture.transparencySummary || null,
+        confidence_scores: scenario.confidenceScores || posture.confidenceScores || null,
         executive_posture: {
           overall_status: posture.status,
+          is_email_in_scope: posture.isEmailInScope,
+          assessment_status: posture.assessmentStatus,
+          scope_reason: posture.scopeReason,
           summary_counts: posture.summaryCounts,
           contributing_factors: posture.contributingFactors,
           category_breakdown: posture.categoryBreakdown

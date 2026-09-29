@@ -25,6 +25,7 @@ import { AiReasoningView } from './components/views/AiReasoningView';
 import { ReportsView } from './components/views/ReportsView';
 import { SettingsView } from './components/views/SettingsView';
 import { GuidedDemoModal } from './components/common/GuidedDemoModal';
+import { DeepAnalysisModal } from './components/common/DeepAnalysisModal';
 import { securityService } from './services/securityService';
 import { DemoScenario } from './types/security';
 
@@ -38,6 +39,12 @@ export default function App() {
   const [isAiOnline, setIsAiOnline] = useState(securityService.isAiOnline());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // 5-Second Deep Forensic Analysis Pipeline State (User Requirement)
+  const [isDeepAnalyzing, setIsDeepAnalyzing] = useState(false);
+  const [deepAnalyzingFileName, setDeepAnalyzingFileName] = useState('');
+  const [deepAnalyzingFileSize, setDeepAnalyzingFileSize] = useState(0);
+  const [pendingScenario, setPendingScenario] = useState<DemoScenario | null>(null);
+
   const posture = securityService.getSecurityPosture();
   const pipelineStages = securityService.getPipelineStages();
 
@@ -48,11 +55,52 @@ export default function App() {
     setSelectedFindingId(null);
   };
 
-  const handleCustomUpload = (file: File) => {
-    const newScenario = securityService.uploadSimulatedPCAP(file.name, file.size);
-    setScenarios([...securityService.getScenarios()]);
-    setActiveScenario(newScenario);
-    setActiveTab('pcap_analysis');
+  const handleCustomUpload = async (file: File) => {
+    setDeepAnalyzingFileName(file.name);
+    setDeepAnalyzingFileSize(file.size);
+    setIsDeepAnalyzing(true);
+
+    try {
+      const realScenario = await securityService.analyzeUploadedPcap(file);
+      setScenarios([...securityService.getScenarios()]);
+      setPendingScenario(realScenario);
+    } catch (err) {
+      console.error('Failed to parse uploaded PCAP:', err);
+    }
+  };
+
+  const handleRunValidation = async () => {
+    setDeepAnalyzingFileName('step7_validation_icmp_fragmented.pcap');
+    setDeepAnalyzingFileSize(64000);
+    setIsDeepAnalyzing(true);
+
+    try {
+      const valScenario = await securityService.runStep7ValidationScenario();
+      setScenarios([...securityService.getScenarios()]);
+      setPendingScenario(valScenario);
+    } catch (err) {
+      console.error('Failed to run Step 7 validation:', err);
+    }
+  };
+
+  const handleTriggerDeepAnalysis = (scenarioToAnalyze?: DemoScenario) => {
+    const target = scenarioToAnalyze || activeScenario;
+    setDeepAnalyzingFileName(target.pcapMetadata.filename);
+    setDeepAnalyzingFileSize(target.pcapMetadata.fileSizeBytes);
+    setPendingScenario(target);
+    setIsDeepAnalyzing(true);
+  };
+
+  const handleDeepAnalysisComplete = () => {
+    if (pendingScenario) {
+      setActiveScenario(pendingScenario);
+      setSelectedSessionId(pendingScenario.sessions[0]?.id || null);
+      setSelectedFindingId(pendingScenario.findings[0]?.id || null);
+      setPendingScenario(null);
+    }
+    setIsDeepAnalyzing(false);
+    // User Requirement: "take time upto 5 seconds to deeply analyze it and automatically goes to the result or anlazyed page"
+    setActiveTab('dashboard');
   };
 
   const handleToggleAi = (online: boolean) => {
@@ -126,12 +174,15 @@ export default function App() {
               onSelectScenario={handleSelectScenario}
               onCustomUpload={handleCustomUpload}
               onNavigateToSessions={() => setActiveTab('sessions')}
+              onRunValidation={handleRunValidation}
+              onTriggerDeepAnalysis={() => handleTriggerDeepAnalysis()}
             />
           )}
 
           {activeTab === 'sessions' && (
             <SessionsView
               sessions={activeScenario.sessions}
+              scenario={activeScenario}
               evidenceList={activeScenario.evidenceList}
               selectedSessionId={selectedSessionId}
               onSelectSession={handleSelectSession}
@@ -155,6 +206,7 @@ export default function App() {
           {activeTab === 'findings' && (
             <FindingsView
               findings={activeScenario.findings}
+              scenario={activeScenario}
               selectedFindingId={selectedFindingId}
               onSelectFinding={handleSelectFinding}
               onNavigateTab={setActiveTab}
@@ -280,6 +332,14 @@ export default function App() {
         onNavigateTab={setActiveTab}
         onSelectSession={setSelectedSessionId}
         onSelectFinding={setSelectedFindingId}
+      />
+
+      {/* 5-Second Deep Forensic Analysis Modal (Auto-routes to result page) */}
+      <DeepAnalysisModal
+        isOpen={isDeepAnalyzing}
+        fileName={deepAnalyzingFileName || activeScenario.pcapMetadata.filename}
+        fileSizeBytes={deepAnalyzingFileSize || activeScenario.pcapMetadata.fileSizeBytes}
+        onComplete={handleDeepAnalysisComplete}
       />
     </div>
   );

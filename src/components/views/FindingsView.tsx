@@ -14,15 +14,19 @@ import {
   Zap,
   Copy,
   Check,
-  Code
+  Code,
+  ShieldX,
+  HelpCircle,
+  FileSearch
 } from 'lucide-react';
-import { Finding, SeverityLevel } from '../../types/security';
+import { DemoScenario, Finding, SeverityLevel } from '../../types/security';
 import { SeverityBadge } from '../common/SeverityBadge';
 import { ConfidenceBadge } from '../common/ConfidenceBadge';
 import { NavigationTab } from '../layout/Sidebar';
 
 interface Props {
   findings: Finding[];
+  scenario?: DemoScenario;
   selectedFindingId: string | null;
   onSelectFinding: (findingId: string) => void;
   onNavigateTab: (tab: NavigationTab) => void;
@@ -31,6 +35,7 @@ interface Props {
 
 export const FindingsView: React.FC<Props> = ({
   findings,
+  scenario,
   selectedFindingId,
   onSelectFinding,
   onNavigateTab,
@@ -330,6 +335,94 @@ ssl = required`;
               </div>
             );
           })
+        ) : scenario?.assessmentStatus === 'OUT OF SCOPE' || scenario?.sessions.length === 0 ? (
+          <div className="bg-gradient-to-r from-amber-950/40 via-[#0F1623] to-[#0A0E17] border border-amber-600/50 rounded-xl p-8 space-y-4 shadow-md">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-amber-950/80 border border-amber-600/70 rounded-xl text-amber-400 shrink-0">
+                <ShieldX className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
+                    Forensic Scope Validation Layer
+                  </span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-amber-950 text-amber-300 border border-amber-700">
+                    ASSESSMENT STATUS: OUT OF SCOPE
+                  </span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                    POSTURE: NOT ASSESSABLE
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-white tracking-tight">
+                  0 Email Cryptographic Findings Generated (Rule Engine Halted)
+                </h3>
+                <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                  {scenario?.scopeValidation?.scopeReason || 'No email communication protocols (SMTP, SMTPS, IMAP, IMAPS, POP3, POP3S) were observed in this capture.'}
+                  {' '}Deterministic rules for transport encryption, cipher suites, and certificates are evaluated ONLY when email sessions are present.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-[#080C14] border border-amber-800/40 rounded-lg text-xs flex items-start gap-2.5">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-slate-300 leading-relaxed">
+                <strong className="text-amber-300 font-mono">GOLDEN FORENSIC RULE:</strong>{' '}
+                Absence of Evidence ≠ Secure. Absence of Evidence = NOT ASSESSABLE.
+                SecureMailScope never declares &quot;0 Findings → SECURE&quot; when no email traffic was analyzed.
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <button
+                onClick={() => onNavigateTab('dashboard')}
+                className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+              >
+                <Layers className="w-4 h-4" />
+                <span>Return to Assessment Dashboard</span>
+              </button>
+              <button
+                onClick={() => onNavigateTab('pcap_analysis')}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+              >
+                <FileSearch className="w-4 h-4 text-cyan-400" />
+                <span>Inspect Protocol Ingestion</span>
+              </button>
+            </div>
+          </div>
+        ) : scenario?.assessmentStatus === 'INSUFFICIENT EVIDENCE' ? (
+          <div className="bg-gradient-to-r from-purple-950/40 via-[#0F1623] to-[#0A0E17] border border-purple-800/50 rounded-xl p-8 space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-purple-950/80 border border-purple-800/70 rounded-xl text-purple-400 shrink-0">
+                <HelpCircle className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-purple-950 text-purple-300 border border-purple-800">
+                  INSUFFICIENT EVIDENCE
+                </span>
+                <h3 className="text-lg font-bold text-white tracking-tight mt-1">
+                  Incomplete Handshake Capture Window
+                </h3>
+                <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                  Email traffic was observed, but the capture window was truncated before full TLS negotiation completed.
+                  Deterministic security conclusions are withheld per ISO/IEC 27037 digital evidence standards.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : findings.length === 0 ? (
+          <div className="bg-[#0F1623] border border-emerald-900/60 rounded-xl p-8 space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-800 text-emerald-400">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">Full Cryptographic Conformance Verified</h3>
+                <p className="text-xs text-slate-400">
+                  All deterministic RFC rules passed with verified packet evidence. Modern TLS, authenticated AEAD ciphers, and valid X.509 certificates were observed.
+                </p>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="bg-[#0F1623] border border-slate-800 rounded-xl p-12 text-center text-slate-400 text-xs">
             No security findings match your current search or severity filter.

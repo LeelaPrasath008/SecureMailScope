@@ -11,7 +11,96 @@ export type EvidenceConfidence = 'COMPLETE' | 'PARTIAL' | 'INSUFFICIENT';
 
 export type EvidenceClass = 'OBSERVED' | 'ASSESSED' | 'POLICY' | 'CONTEXTUAL' | 'AI_ASSISTED';
 
-export type PostureStatus = 'AT RISK' | 'DEGRADED' | 'SECURE';
+// Allowed Final Forensic Report States per Section 4 & Golden Forensic Rule:
+export type PostureStatus =
+  | 'SECURE'
+  | 'LOW_RISK'
+  | 'MEDIUM_RISK'
+  | 'HIGH_RISK'
+  | 'CRITICAL_RISK'
+  | 'OUT_OF_SCOPE'
+  | 'INSUFFICIENT_EVIDENCE'
+  | 'NOT_ASSESSABLE'
+  | 'AT RISK'
+  | 'DEGRADED'
+  | 'HIGH RISK'
+  | 'CRITICAL RISK'
+  | 'OUT OF SCOPE'
+  | 'INSUFFICIENT EVIDENCE';
+
+export type AssessmentStatus =
+  | 'IN_SCOPE'
+  | 'OUT_OF_SCOPE'
+  | 'OUT OF SCOPE'
+  | 'INSUFFICIENT_EVIDENCE'
+  | 'INSUFFICIENT EVIDENCE';
+
+export interface ProtocolClassificationEntry {
+  protocol: string;
+  packetCount: number;
+  percentage: number;
+  category: 'EMAIL' | 'WEB' | 'INFRASTRUCTURE' | 'VEHICULAR' | 'REMOTE_ACCESS' | 'UNKNOWN';
+}
+
+export interface ProtocolClassificationResult {
+  detectedProtocols: ProtocolClassificationEntry[];
+  counts: {
+    smtp: number;
+    smtps: number;
+    imap: number;
+    imaps: number;
+    pop3: number;
+    pop3s: number;
+    http: number;
+    https: number;
+    dns: number;
+    ssh: number;
+    ftp: number;
+    icmp: number;
+    itsG5: number;
+    v2x: number;
+    unknown: number;
+  };
+  totalEmailPackets: number;
+  totalNonEmailPackets: number;
+  primaryProtocol: string;
+  primaryCategory: 'EMAIL' | 'WEB' | 'VEHICULAR' | 'INFRASTRUCTURE' | 'REMOTE_ACCESS' | 'UNKNOWN';
+  confidence: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface ScopeValidationResult {
+  isEmailInScope: boolean;
+  assessmentStatus: AssessmentStatus;
+  scopeReason: string;
+  securityPosture: PostureStatus;
+  riskScore: string;
+  routingDecision: {
+    targetEngine: 'SecureMailScope Analysis' | 'Web Security Engine' | 'V2X Security Gateway' | 'Manual Protocol Carving';
+    routedTrafficType: 'Email Traffic' | 'Web Traffic' | 'Vehicular Traffic (ITS-G5 / V2X)' | 'Unknown Traffic';
+    isScopeAccepted: boolean;
+    explanation: string;
+  };
+}
+
+export interface ConfidenceScores {
+  protocolConfidence: 'HIGH' | 'MEDIUM' | 'LOW';
+  evidenceConfidence: EvidenceConfidence;
+  assessmentConfidence: 'HIGH' | 'MEDIUM' | 'LOW';
+}
+
+export interface AnalystTransparencySummary {
+  totalPackets: number;
+  emailPackets: number;
+  smtpSessions: number;
+  imapSessions: number;
+  pop3Sessions: number;
+  tlsSessions?: number;
+  detectedProtocolsSummary: string;
+  scopeStatus: AssessmentStatus;
+  whyConclusionReached: string[];
+  chainOfCustodyHash: string;
+  confidenceScore: 'HIGH' | 'MEDIUM' | 'LOW';
+}
 
 export interface HandshakeMessageItem {
   name: string;
@@ -45,6 +134,10 @@ export interface PCAPMetadata {
   truncatedHandshakeCount?: number;
   missingPacketsCount?: number;
   sha256VerificationState?: 'COMPUTED' | 'MATCHED_REFERENCE' | 'NO_REFERENCE';
+  protocolClassification?: ProtocolClassificationResult;
+  scopeValidation?: ScopeValidationResult;
+  confidenceScores?: ConfidenceScores;
+  analystTransparency?: AnalystTransparencySummary;
 }
 
 export interface PipelineStage {
@@ -227,6 +320,13 @@ export interface SecurityPosture {
     count: number;
     description: string;
   }[];
+  assessmentStatus?: AssessmentStatus;
+  scopeValidation?: ScopeValidationResult;
+  scopeReason?: string;
+  isEmailInScope?: boolean;
+  confidenceScores?: ConfidenceScores;
+  transparencySummary?: AnalystTransparencySummary;
+  routingDecision?: ScopeValidationResult['routingDecision'];
   summaryCounts: {
     pcapsAnalyzed: number;
     totalSessions: number;
@@ -283,4 +383,8 @@ export interface DemoScenario {
   rules: DeterministicRule[];
   defaultSelectedSessionId: string;
   description: string;
+  assessmentStatus?: AssessmentStatus;
+  scopeValidation?: ScopeValidationResult;
+  confidenceScores?: ConfidenceScores;
+  analystTransparency?: AnalystTransparencySummary;
 }

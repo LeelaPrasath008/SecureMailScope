@@ -1194,6 +1194,265 @@ const RAW_SCENARIOS: DemoScenario[] = [
       }
     ],
     rules: DETERMINISTIC_RULES
+  },
+  // SCENARIO 6: Out-of-Scope Vehicular Telemetry (ITS-G5 / V2X)
+  {
+    id: 'scenario-itsg5-vehicular',
+    title: 'Scenario 6: Out-of-Scope Vehicular Telemetry (ITS-G5 / V2X)',
+    subtitle: '5,313 Packets · ETSI ITS-G5 CAM/DENM · 0 Email Streams · Assessment Out of Scope',
+    description: 'Real-world connected vehicle broadcast trace (ETSI GeoNetworking, CAM, DENM over 5.9 GHz DSRC/C-V2X). Protocol Classification Engine identifies 100% vehicular telemetry; Scope Validation Layer halts email assessment and diverts to V2X Security Gateway with NOT ASSESSABLE status.',
+    defaultSelectedSessionId: '',
+    pcapMetadata: {
+      id: 'PCAP-2026-V2X-01',
+      filename: 'connected_corridor_its_g5_v2x.pcapng',
+      sha256: '4f89d31a57b28c3014de99824c96571a8e24bf98a723812d6a59cb4a148f95c2',
+      fileSizeBytes: 2481020,
+      captureTimestamp: '2026-09-25 11:20:00 UTC',
+      analysisTimestamp: '2026-09-25 11:20:45 UTC',
+      packetCount: 5313,
+      streamCount: 0,
+      status: 'VERIFIED',
+      confidence: 'COMPLETE',
+      capturedInterface: 'wlan0 (ETSI ITS-G5 Roadside Unit TAP)',
+      notes: 'Automotive vehicular telemetry capture. Zero email traffic present.',
+      captureDurationSec: 60.0,
+      totalTcpFlows: 0,
+      tlsHandshakeCount: 0,
+      protocolClassification: {
+        detectedProtocols: [
+          { protocol: 'ITS-G5', packetCount: 5313, percentage: 100, category: 'VEHICULAR' }
+        ],
+        counts: {
+          smtp: 0,
+          smtps: 0,
+          imap: 0,
+          imaps: 0,
+          pop3: 0,
+          pop3s: 0,
+          http: 0,
+          https: 0,
+          dns: 0,
+          ssh: 0,
+          ftp: 0,
+          icmp: 0,
+          itsG5: 5313,
+          v2x: 0,
+          unknown: 0
+        },
+        totalEmailPackets: 0,
+        totalNonEmailPackets: 5313,
+        primaryProtocol: 'ITS-G5',
+        primaryCategory: 'VEHICULAR',
+        confidence: 'HIGH'
+      },
+      scopeValidation: {
+        isEmailInScope: false,
+        assessmentStatus: 'OUT OF SCOPE',
+        scopeReason: 'No SMTP, IMAP, POP3, SMTPS, IMAPS, or POP3S traffic identified.',
+        securityPosture: 'OUT OF SCOPE',
+        riskScore: 'N/A',
+        routingDecision: {
+          targetEngine: 'V2X Security Gateway',
+          routedTrafficType: 'Vehicular Traffic (ITS-G5 / V2X)',
+          isScopeAccepted: false,
+          explanation: '5,313 ITS-G5 GeoNetworking/CAM/DENM frames identified. Diverted to V2X Security Gateway for IEEE 1609 / ETSI TS 102 941 PKI verification.'
+        }
+      },
+      confidenceScores: {
+        protocolConfidence: 'HIGH',
+        evidenceConfidence: 'COMPLETE',
+        assessmentConfidence: 'HIGH'
+      },
+      analystTransparency: {
+        totalPackets: 5313,
+        emailPackets: 0,
+        smtpSessions: 0,
+        imapSessions: 0,
+        pop3Sessions: 0,
+        detectedProtocolsSummary: 'ITS-G5 (5,313)',
+        scopeStatus: 'OUT OF SCOPE',
+        whyConclusionReached: [
+          '5,313 packets analyzed passively.',
+          'SMTP sessions: 0, IMAP sessions: 0, POP3 sessions: 0.',
+          'Detected protocol: ITS-G5 (ETSI GeoNetworking / BTP CAM / DENM).',
+          'Scope Validation Layer halted cryptographic email assessment per forensic mandate.',
+          'Result: Assessment Out of Scope (Security Posture: NOT ASSESSABLE). Confidence: High.'
+        ],
+        chainOfCustodyHash: '4f89d31a57b28c3014de99824c96571a8e24bf98a723812d6a59cb4a148f95c2',
+        confidenceScore: 'HIGH'
+      }
+    },
+    sessions: [],
+    findings: [],
+    evidenceList: [],
+    rules: DETERMINISTIC_RULES,
+    assessmentStatus: 'OUT OF SCOPE',
+    scopeValidation: {
+      isEmailInScope: false,
+      assessmentStatus: 'OUT OF SCOPE',
+      scopeReason: 'No SMTP, IMAP, POP3, SMTPS, IMAPS, or POP3S traffic identified.',
+      securityPosture: 'OUT OF SCOPE',
+      riskScore: 'N/A',
+      routingDecision: {
+        targetEngine: 'V2X Security Gateway',
+        routedTrafficType: 'Vehicular Traffic (ITS-G5 / V2X)',
+        isScopeAccepted: false,
+        explanation: '5,313 ITS-G5 frames identified. Diverted to V2X Security Gateway.'
+      }
+    },
+    confidenceScores: {
+      protocolConfidence: 'HIGH',
+      evidenceConfidence: 'COMPLETE',
+      assessmentConfidence: 'HIGH'
+    },
+    analystTransparency: {
+      totalPackets: 5313,
+      emailPackets: 0,
+      smtpSessions: 0,
+      imapSessions: 0,
+      pop3Sessions: 0,
+      detectedProtocolsSummary: 'ITS-G5 (5,313)',
+      scopeStatus: 'OUT OF SCOPE',
+      whyConclusionReached: [
+        '5,313 packets analyzed passively.',
+        'SMTP sessions: 0, IMAP sessions: 0, POP3 sessions: 0.',
+        'Detected protocol: ITS-G5 (ETSI GeoNetworking / BTP CAM / DENM).',
+        'Scope Validation Layer halted cryptographic email assessment per forensic mandate.',
+        'Result: Assessment Out of Scope (Security Posture: NOT ASSESSABLE). Confidence: High.'
+      ],
+      chainOfCustodyHash: '4f89d31a57b28c3014de99824c96571a8e24bf98a723812d6a59cb4a148f95c2',
+      confidenceScore: 'HIGH'
+    }
+  },
+  // SCENARIO 7: Out-of-Scope Web Traffic (HTTP / HTTPS)
+  {
+    id: 'scenario-web-traffic',
+    title: 'Scenario 7: Out-of-Scope Web Application Traffic (HTTPS/HTTP)',
+    subtitle: '4,210 Packets · HTTPS/HTTP Port 443/80 · 0 Email Streams · Assessment Out of Scope',
+    description: 'Enterprise web browsing capture consisting exclusively of HTTP and HTTPS web flows. Diverted to Web Application Security Gateway per Protocol-Aware Assessment Routing.',
+    defaultSelectedSessionId: '',
+    pcapMetadata: {
+      id: 'PCAP-2026-WEB-01',
+      filename: 'enterprise_gateway_https_web.pcapng',
+      sha256: '7b1029c48ea92d8314e0821bf3a5682910c2834bfa902187349120194821a8bc',
+      fileSizeBytes: 1984200,
+      captureTimestamp: '2026-09-25 14:10:00 UTC',
+      analysisTimestamp: '2026-09-25 14:10:30 UTC',
+      packetCount: 4210,
+      streamCount: 0,
+      status: 'VERIFIED',
+      confidence: 'COMPLETE',
+      capturedInterface: 'eth0 (Corporate Proxy Tap)',
+      notes: 'Web traffic capture. Zero email submission or mailbox access protocols.',
+      captureDurationSec: 32.0,
+      totalTcpFlows: 0,
+      tlsHandshakeCount: 0,
+      protocolClassification: {
+        detectedProtocols: [
+          { protocol: 'HTTPS', packetCount: 3650, percentage: 86.7, category: 'WEB' },
+          { protocol: 'HTTP', packetCount: 560, percentage: 13.3, category: 'WEB' }
+        ],
+        counts: {
+          smtp: 0,
+          smtps: 0,
+          imap: 0,
+          imaps: 0,
+          pop3: 0,
+          pop3s: 0,
+          http: 560,
+          https: 3650,
+          dns: 0,
+          ssh: 0,
+          ftp: 0,
+          icmp: 0,
+          itsG5: 0,
+          v2x: 0,
+          unknown: 0
+        },
+        totalEmailPackets: 0,
+        totalNonEmailPackets: 4210,
+        primaryProtocol: 'HTTPS',
+        primaryCategory: 'WEB',
+        confidence: 'HIGH'
+      },
+      scopeValidation: {
+        isEmailInScope: false,
+        assessmentStatus: 'OUT OF SCOPE',
+        scopeReason: 'No SMTP, IMAP, POP3, SMTPS, IMAPS, or POP3S traffic identified.',
+        securityPosture: 'OUT OF SCOPE',
+        riskScore: 'N/A',
+        routingDecision: {
+          targetEngine: 'Web Security Engine',
+          routedTrafficType: 'Web Traffic',
+          isScopeAccepted: false,
+          explanation: 'HTTP/HTTPS web traffic identified. Diverted to Web Application Security Gateway.'
+        }
+      },
+      confidenceScores: {
+        protocolConfidence: 'HIGH',
+        evidenceConfidence: 'COMPLETE',
+        assessmentConfidence: 'HIGH'
+      },
+      analystTransparency: {
+        totalPackets: 4210,
+        emailPackets: 0,
+        smtpSessions: 0,
+        imapSessions: 0,
+        pop3Sessions: 0,
+        detectedProtocolsSummary: 'HTTPS (3,650), HTTP (560)',
+        scopeStatus: 'OUT OF SCOPE',
+        whyConclusionReached: [
+          '4,210 packets analyzed passively.',
+          'SMTP sessions: 0, IMAP sessions: 0, POP3 sessions: 0.',
+          'Detected protocol: HTTPS and HTTP web traffic.',
+          'Scope Validation Layer halted cryptographic email assessment.',
+          'Result: Assessment Out of Scope. Confidence: High.'
+        ],
+        chainOfCustodyHash: '7b1029c48ea92d8314e0821bf3a5682910c2834bfa902187349120194821a8bc',
+        confidenceScore: 'HIGH'
+      }
+    },
+    sessions: [],
+    findings: [],
+    evidenceList: [],
+    rules: DETERMINISTIC_RULES,
+    assessmentStatus: 'OUT OF SCOPE',
+    scopeValidation: {
+      isEmailInScope: false,
+      assessmentStatus: 'OUT OF SCOPE',
+      scopeReason: 'No SMTP, IMAP, POP3, SMTPS, IMAPS, or POP3S traffic identified.',
+      securityPosture: 'OUT OF SCOPE',
+      riskScore: 'N/A',
+      routingDecision: {
+        targetEngine: 'Web Security Engine',
+        routedTrafficType: 'Web Traffic',
+        isScopeAccepted: false,
+        explanation: 'HTTP/HTTPS web traffic identified. Diverted to Web Application Security Gateway.'
+      }
+    },
+    confidenceScores: {
+      protocolConfidence: 'HIGH',
+      evidenceConfidence: 'COMPLETE',
+      assessmentConfidence: 'HIGH'
+    },
+    analystTransparency: {
+      totalPackets: 4210,
+      emailPackets: 0,
+      smtpSessions: 0,
+      imapSessions: 0,
+      pop3Sessions: 0,
+      detectedProtocolsSummary: 'HTTPS (3,650), HTTP (560)',
+      scopeStatus: 'OUT OF SCOPE',
+      whyConclusionReached: [
+        '4,210 packets analyzed passively.',
+        'SMTP sessions: 0, IMAP sessions: 0, POP3 sessions: 0.',
+        'Detected protocol: HTTPS and HTTP web traffic.',
+        'Scope Validation Layer halted cryptographic email assessment.',
+        'Result: Assessment Out of Scope. Confidence: High.'
+      ],
+      chainOfCustodyHash: '7b1029c48ea92d8314e0821bf3a5682910c2834bfa902187349120194821a8bc',
+      confidenceScore: 'HIGH'
+    }
   }
 ];
 
@@ -1202,7 +1461,9 @@ export const DEMO_SCENARIOS: DemoScenario[] = [
   RAW_SCENARIOS[1], // Scenario 2: Deprecated TLS 1.0 on Exchange MTA
   RAW_SCENARIOS[2], // Scenario 3: Expired Certificate & Weak Hash on IMAP
   RAW_SCENARIOS[3], // Scenario 4: Plaintext POP3 Credentials Exposure
-  RAW_SCENARIOS[4]  // Scenario 5: Truncated Incomplete SMTP Capture
+  RAW_SCENARIOS[4], // Scenario 5: Truncated Incomplete SMTP Capture
+  RAW_SCENARIOS[5], // Scenario 6: Out-of-Scope Vehicular Telemetry (ITS-G5 / V2X)
+  RAW_SCENARIOS[6]  // Scenario 7: Out-of-Scope Web Application Traffic (HTTP/HTTPS)
 ];
 
 export const INITIAL_PIPELINE_STAGES: PipelineStage[] = [

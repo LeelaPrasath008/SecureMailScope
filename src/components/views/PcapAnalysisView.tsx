@@ -27,6 +27,8 @@ interface Props {
   onSelectScenario: (id: string) => void;
   onCustomUpload: (file: File) => void;
   onNavigateToSessions: () => void;
+  onRunValidation?: () => void;
+  onTriggerDeepAnalysis?: () => void;
 }
 
 export const PcapAnalysisView: React.FC<Props> = ({
@@ -35,7 +37,9 @@ export const PcapAnalysisView: React.FC<Props> = ({
   pipelineStages,
   onSelectScenario,
   onCustomUpload,
-  onNavigateToSessions
+  onNavigateToSessions,
+  onRunValidation,
+  onTriggerDeepAnalysis
 }) => {
   const [expandedStageId, setExpandedStageId] = useState<string | null>('tls_handshake_analysis');
   const [isDragging, setIsDragging] = useState(false);
@@ -68,11 +72,7 @@ export const PcapAnalysisView: React.FC<Props> = ({
   };
 
   const handleFileSelected = (file: File) => {
-    setIsAnalyzing(true);
-    setTimeout(() => {
-      onCustomUpload(file);
-      setIsAnalyzing(false);
-    }, 600);
+    onCustomUpload(file);
   };
 
   const toggleStage = (stageId: string) => {
@@ -167,6 +167,45 @@ export const PcapAnalysisView: React.FC<Props> = ({
               <span className="text-[11px] font-mono text-slate-500">or select demonstration scenario below</span>
             </div>
           </div>
+
+          {/* 5-Second Deep Forensic Analysis Pipeline (User Requested Feature) */}
+          <div className="mt-3 p-3 bg-gradient-to-r from-cyan-950/40 via-[#080C14] to-blue-950/30 border border-cyan-800/60 rounded-lg flex items-center justify-between gap-3 text-xs font-mono">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="font-bold text-cyan-200 block">5-Second Deep Forensic Analysis</span>
+              </div>
+              <span className="text-[11px] text-slate-400 block mt-0.5">
+                Deeply dissects active capture across 7 phases and automatically routes to the analyzed result page.
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onTriggerDeepAnalysis}
+              className="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded font-semibold text-xs shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              Run Deep Analysis (5s)
+            </button>
+          </div>
+
+          {/* STEP 7 – VALIDATION Test Runner (Prompt Exact Specification) */}
+          {onRunValidation && (
+            <div className="mt-2.5 p-3 bg-[#080C14] border border-slate-800 rounded-lg flex items-center justify-between gap-3 text-xs font-mono">
+              <div>
+                <span className="font-bold text-slate-300 block">STEP 7 – Ground-Truth Validation Test</span>
+                <span className="text-[11px] text-slate-400 block">
+                  Executes exact test case: 3 ICMP, 0 TCP, 0 SMTP, 0 TLS, 1 Fragmented IPv4.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onRunValidation}
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded font-semibold text-xs transition-colors cursor-pointer shrink-0"
+              >
+                Run Validation Test
+              </button>
+            </div>
+          )}
 
           {/* Quick Scenario Buttons (Prompt Section 21) */}
           <div className="mt-4 pt-3 border-t border-slate-800/80">

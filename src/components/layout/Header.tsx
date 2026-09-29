@@ -57,6 +57,12 @@ export const Header: React.FC<Props> = ({
 
   const getRiskColor = (status: string) => {
     switch (status) {
+      case 'OUT OF SCOPE':
+        return 'text-amber-300 bg-amber-950/60 border-amber-700/70';
+      case 'INSUFFICIENT':
+        return 'text-purple-300 bg-purple-950/60 border-purple-800/70';
+      case 'CRITICAL RISK':
+      case 'HIGH RISK':
       case 'AT RISK':
         return 'text-rose-400 bg-rose-950/40 border-rose-800/60';
       case 'DEGRADED':
@@ -66,10 +72,24 @@ export const Header: React.FC<Props> = ({
     }
   };
 
-  const activeStatus = activeScenario.findings.some(f => f.severity === 'CRITICAL')
-    ? 'AT RISK'
+  const isOutOfScope =
+    activeScenario.assessmentStatus === 'OUT OF SCOPE' ||
+    activeScenario.sessions.length === 0;
+
+  const isInsufficient =
+    activeScenario.assessmentStatus === 'INSUFFICIENT EVIDENCE' ||
+    activeScenario.pcapMetadata.confidence === 'INSUFFICIENT';
+
+  const activeStatus = isOutOfScope
+    ? 'OUT OF SCOPE'
+    : isInsufficient
+    ? 'INSUFFICIENT'
+    : activeScenario.findings.some(f => f.severity === 'CRITICAL')
+    ? 'CRITICAL RISK'
     : activeScenario.findings.some(f => f.severity === 'HIGH')
-    ? 'DEGRADED'
+    ? 'HIGH RISK'
+    : activeScenario.findings.some(f => f.severity === 'MEDIUM')
+    ? 'AT RISK'
     : 'SECURE';
 
   return (

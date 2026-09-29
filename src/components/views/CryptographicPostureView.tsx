@@ -253,18 +253,49 @@ export const CryptographicPostureView: React.FC<Props> = ({
             <span className="text-xs font-mono text-slate-400">Current Assessed State:</span>
             <span
               className={`text-xs font-mono font-bold px-2 py-0.5 rounded border ${
-                posture.status === 'AT RISK'
+                posture.status === 'OUT OF SCOPE'
+                  ? 'bg-amber-950/50 text-amber-300 border-amber-700/70'
+                  : posture.status === 'INSUFFICIENT EVIDENCE'
+                  ? 'bg-purple-950/50 text-purple-300 border-purple-800/70'
+                  : posture.status === 'AT RISK' || posture.status === 'CRITICAL RISK' || posture.status === 'HIGH RISK'
                   ? 'bg-rose-950/40 text-rose-400 border-rose-800'
                   : posture.status === 'DEGRADED'
                   ? 'bg-amber-950/40 text-amber-400 border-amber-800'
                   : 'bg-emerald-950/40 text-emerald-400 border-emerald-800'
               }`}
             >
-              {posture.status}
+              {posture.status === 'OUT OF SCOPE' ? 'OUT OF SCOPE (NOT ASSESSABLE)' : posture.status}
             </span>
           </div>
         </div>
       </div>
+
+      {/* Scope Guard Notice when Out of Scope */}
+      {(posture.status === 'OUT OF SCOPE' || scenario.sessions.length === 0) && (
+        <div className="p-4 bg-amber-950/20 border border-amber-600/40 rounded-xl space-y-2 text-xs">
+          <div className="flex items-center gap-2 text-amber-300 font-bold">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>AUDITOR SCOPE GUARD: Cryptographic Posture is NOT ASSESSABLE</span>
+          </div>
+          <p className="text-slate-300 leading-relaxed">
+            The active PCAP ({scenario.pcapMetadata.filename}) does not contain email protocol traffic (SMTP, IMAP, POP3).
+            Per the Scope Validation standard, cryptographic assessment across Transport, Cipher Suites, and Certificates is halted
+            to prevent false assurance. SecureMailScope strictly prohibits outputting &quot;SECURE&quot; or &quot;0 Findings&quot; on non-email traffic.
+          </p>
+          <div className="pt-2 flex flex-wrap items-center gap-2">
+            <span className="text-slate-400 font-mono text-[11px]">Identified traffic:</span>
+            <span className="px-2 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono font-semibold text-[11px]">
+              {scenario.pcapMetadata.protocolClassification?.primaryProtocol || 'Vehicular / Web / Non-Email'}
+            </span>
+            <button
+              onClick={() => onNavigateTab('dashboard')}
+              className="ml-auto px-2.5 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-xs font-semibold cursor-pointer transition-colors"
+            >
+              View Protocol-Aware Router →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* The 4 Architectural Domains */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

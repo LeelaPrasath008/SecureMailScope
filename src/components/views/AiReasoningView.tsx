@@ -73,13 +73,25 @@ export const AiReasoningView: React.FC<Props> = ({
   useEffect(() => {
     fetchAnalysis(selectedSessionId);
     // Initialize welcome chat message for this session
+    const welcomeText = activeSession
+      ? `Forensic context loaded for Stream ${activeSession.id} (${activeSession.protocol} on port ${activeSession.destPort}). You can ask me to explain specific RFC standard violations, compounding cryptographic risks, or generate server hardening configurations.`
+      : scenario.findings.length > 0
+      ? `Forensic context loaded for capture ${scenario.pcapMetadata.filename}. Evaluated rule: ${scenario.findings[0].title}. You can ask me to explain this finding, assess risk impact, or generate server remediation.`
+      : `Forensic capture ${scenario.pcapMetadata.filename} loaded. Zero transport sessions and zero security findings detected.`;
+
+    const welcomeAnchor = activeSession
+      ? `Grounded in ${activeSession.evidenceConfidence} wire evidence`
+      : scenario.findings.length > 0
+      ? `Grounded in ${scenario.findings[0].standardReference}`
+      : 'Passive Ingestion Verified';
+
     setChatMessages([
       {
         id: 'msg-welcome',
         sender: 'ai',
-        text: `Forensic context loaded for Stream ${activeSession?.id} (${activeSession?.protocol} on port ${activeSession?.destPort}). You can ask me to explain specific RFC standard violations, compounding cryptographic risks, or generate server hardening configurations.`,
+        text: welcomeText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        evidenceAnchor: `Grounded in ${activeSession?.evidenceConfidence} wire evidence`
+        evidenceAnchor: welcomeAnchor
       }
     ]);
   }, [selectedSessionId, isAiOnline, scenario.id]);
@@ -164,20 +176,26 @@ export const AiReasoningView: React.FC<Props> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span>Target Stream:</span>
-            <select
-              value={selectedSessionId}
-              onChange={(e) => setSelectedSessionId(e.target.value)}
-              className="bg-[#0A0E17] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
-            >
-              {scenario.sessions.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.id} ({s.protocol} - {s.risk})
-                </option>
-              ))}
-            </select>
-          </div>
+          {scenario.sessions.length > 0 ? (
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span>Target Stream:</span>
+              <select
+                value={selectedSessionId}
+                onChange={(e) => setSelectedSessionId(e.target.value)}
+                className="bg-[#0A0E17] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
+              >
+                {scenario.sessions.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.id} ({s.protocol} - {s.risk})
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="text-xs font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-800/80 px-2.5 py-1.5 rounded-lg">
+              Target: {scenario.pcapMetadata.filename}
+            </div>
+          )}
 
           <button
             onClick={() => onToggleAi(!isAiOnline)}
