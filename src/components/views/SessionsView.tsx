@@ -89,27 +89,27 @@ export const SessionsView: React.FC<Props> = ({
     <div className="p-4 sm:p-6 space-y-4 max-w-7xl mx-auto">
       {/* Top Filter and Search Bar */}
       <div className="bg-[#0F1623] border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
-        <div className="flex flex-1 items-center gap-3">
-          <div className="relative flex-1 max-w-md">
+        <div className="flex flex-col sm:flex-row flex-1 items-stretch sm:items-center gap-2.5">
+          <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search stream ID, IP address, hostname, cipher..."
+              placeholder="Search stream ID, IP address, cipher..."
               className="w-full bg-[#0A0E17] border border-slate-700/80 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
             />
           </div>
 
-          {/* Protocol Filter Tabs */}
-          <div className="hidden sm:flex items-center gap-1 bg-[#0A0E17] border border-slate-800 p-0.5 rounded-lg">
+          {/* Protocol Filter Tabs (Touch Friendly) */}
+          <div className="flex items-center gap-1 bg-[#0A0E17] border border-slate-800 p-0.5 rounded-lg overflow-x-auto shrink-0">
             {(['ALL', 'SMTP', 'IMAP', 'POP3'] as const).map((proto) => (
               <button
                 key={proto}
                 onClick={() => setProtocolFilter(proto)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
+                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap ${
                   protocolFilter === proto
-                    ? 'bg-slate-800 text-cyan-300 font-semibold'
+                    ? 'bg-slate-800 text-cyan-300 font-semibold shadow-xs'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -144,7 +144,7 @@ export const SessionsView: React.FC<Props> = ({
       {/* Master-Detail Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Master: Session List Column (5 cols) */}
-        <div className="lg:col-span-5 bg-[#0F1623] border border-slate-800 rounded-xl overflow-hidden shadow-xs flex flex-col max-h-[calc(100vh-180px)]">
+        <div className="lg:col-span-5 bg-[#0F1623] border border-slate-800 rounded-xl overflow-hidden shadow-xs flex flex-col max-h-[340px] lg:max-h-[calc(100vh-180px)]">
           <div className="p-3.5 bg-[#0A0E17] border-b border-slate-800 flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-300">Reconstructed Streams</span>
             <span className="text-[11px] text-slate-400">Click to inspect</span>

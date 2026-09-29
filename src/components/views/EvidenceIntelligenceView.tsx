@@ -572,7 +572,7 @@ export const EvidenceIntelligenceView: React.FC<Props> = ({
       {/* Main Graph & Inspector Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* Left: Graph Canvas (8 cols) */}
-        <div className="lg:col-span-8 bg-[#0F1623] border border-slate-800 rounded-xl overflow-hidden shadow-xs flex flex-col min-h-[620px]">
+        <div className="lg:col-span-8 bg-[#0F1623] border border-slate-800 rounded-xl overflow-hidden shadow-xs flex flex-col min-h-[440px] lg:min-h-[620px]">
           {/* Canvas Sub-Header */}
           <div className="p-3.5 bg-[#0A0E17] border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -587,11 +587,16 @@ export const EvidenceIntelligenceView: React.FC<Props> = ({
                 ({filteredNodes.length} nodes active)
               </span>
             </div>
-            <span className="text-[11px] text-slate-400">Click any node to inspect evidence attributes</span>
+            <span className="text-[11px] text-slate-400 hidden sm:inline">Click any node to inspect evidence attributes</span>
           </div>
 
           {/* Graph Visualization Body */}
-          <div className="flex-1 p-4 overflow-x-auto bg-[#0A0E17]/40">
+          <div className="flex-1 p-3 sm:p-4 overflow-x-auto bg-[#0A0E17]/40">
+            {/* Mobile swipe helper */}
+            <div className="lg:hidden px-2.5 py-1.5 bg-cyan-950/40 border border-cyan-800/50 rounded-lg text-[10px] text-cyan-300 font-mono flex items-center justify-between mb-3">
+              <span>← Swipe horizontally to explore pipeline →</span>
+              <span>6 Stages</span>
+            </div>
             {graphMode === 'FLOW' && (
               /* Interactive Visual Multi-Stage Flow Graph */
               <div className="min-w-[840px] space-y-5">

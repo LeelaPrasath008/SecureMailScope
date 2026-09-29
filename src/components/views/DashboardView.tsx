@@ -49,29 +49,30 @@ export const DashboardView: React.FC<Props> = ({
   const isSecure = posture.status === 'SECURE';
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 max-w-7xl mx-auto">
       {/* Scenario Quick Selector Banner (1-Click Switcher) */}
       {scenarios.length > 0 && onSelectScenario && (
         <div className="bg-[#0F1623] border border-slate-800/90 rounded-xl p-3 px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-slate-300">Quick Test Scenario:</span>
-            <span className="text-xs text-slate-400">Select a pre-analyzed traffic capture to inspect</span>
+            <span className="text-xs text-slate-400 hidden sm:inline">Select a pre-analyzed traffic capture to inspect</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
             {scenarios.map((s) => {
               const isCurrent = s.id === scenario.id;
               return (
                 <button
                   key={s.id}
                   onClick={() => onSelectScenario(s.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                     isCurrent
-                      ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/50 shadow-xs'
+                      ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/50 shadow-xs font-semibold'
                       : 'bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60'
                   }`}
                 >
-                  <span>{s.title}</span>
+                  <span className="sm:hidden">{s.title.split(':')[0]}</span>
+                  <span className="hidden sm:inline">{s.title}</span>
                 </button>
               );
             })}
@@ -80,7 +81,7 @@ export const DashboardView: React.FC<Props> = ({
       )}
 
       {/* Hero Posture Banner */}
-      <div className={`rounded-xl border p-6 transition-all ${
+      <div className={`rounded-xl border p-4 sm:p-6 transition-all ${
         isAtRisk
           ? 'bg-gradient-to-r from-rose-950/30 via-[#0F1623] to-[#0A0E17] border-rose-900/40'
           : isDegraded

@@ -152,7 +152,7 @@ export const ForensicMetricGraphs: React.FC<Props> = ({ scenario, className = ''
         </div>
 
         {/* Legend */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-center gap-5 text-xs font-mono">
+        <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-xs bg-[#16A34A] shrink-0" />
             <span className="text-slate-300">
