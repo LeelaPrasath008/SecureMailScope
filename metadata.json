@@ -1,0 +1,8 @@
+{
+  "name": "Remix SecureMailScope — Email Cryptographic Posture \u0026 Traffic Forensics",
+  "description": "AI-Assisted cryptographic security posture assessment and traffic forensics for email communications (SMTP, IMAP, POP3) analyzing PCAPs, TLS handshakes, X.509 certificates, and deterministic security rules with grounded AI reasoning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
